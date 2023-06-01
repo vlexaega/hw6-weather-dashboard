@@ -1,55 +1,128 @@
-//User types in city name and clicks search 
-    //pull data from API and match with the city the user searched
-    //return the relevant data for the next 5 days in the days columns
+// User types in city name and clicks search 
+// Pull data from API and match with the city the user searched
+// Return the relevant data for the next 5 days in the days columns
 
-//target the displays and buttons on the html page
+// Target the displays and buttons on the HTML page
 var tableBody = document.getElementById('weather-display');
 var fetchButton = document.getElementById('fetch-button');
+var currentWeatherDisplay = document.getElementById('current-weather-display');
+var searchInput = document.getElementById('search-input');
+var searchHistory = document.getElementById('search-history');
 
-//create undefined variables for the lat and lon 
-var lat;
-var lon;
-
-//set date format
+// Set date format
 var today = dayjs().format('ddd MMM D, YYYY');
 
-//store the users search data in local storage 
-var citySearch = document.querySelector("#search-input")
+// Retrieve the previous searches from local storage
+var previousSearches = localStorage.getItem('LocalWeatherSearches');
+var searchList = previousSearches ? JSON.parse(previousSearches) : [];
 
-fetchButton.addEventListener('click', function(event){
-    event.preventDefault;
-    var cityWeather = {
-        name: citySearch.value,
+// Display the last 5 searches
+displaySearchHistory();
+
+// Add event listener to the fetch button
+fetchButton.addEventListener('click', function(event) {
+    event.preventDefault();
+    var cityName = searchInput.value.trim();
+    if (cityName) {
+        displayWeather(cityName);
+        addSearchToHistory(cityName);
+        searchInput.value = '';
     }
-    localStorage.setItem("Local Weather", JSON.stringify(cityWeather))
-    citySearch.value = " "
 });
 
-//test the API pulling the data to confirm it 
-function getWeather (){
-    //var APIKey = "4941bfdda32877230c1f6b853660b979";
-    var requestUrl = 'https://api.openweathermap.org/data/2.5/forecast?lat={lat}&lon={lon}&appid={4941bfdda32877230c1f6b853660b979}';
+// Function to display weather data
+function displayWeather(cityName) {
+    var APIKey = "4941bfdda32877230c1f6b853660b979";
+    var geocodeUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&limit=1&appid=${APIKey}`;
 
-    fetch(requestUrl)
-    .then(function (response){
-        console.log(response);
-        return response.json();
+    fetch(geocodeUrl)
+        .then(function(response) {
+            if (!response.ok) {
+                throw new Error("Network response was not ok");
+            }
+            return response.json();
         })
-    .then(function (data) {
-        console.log(data)
-        for (var i=0; i < data.length; i++) {
-            var createTableRow = document.createElement('tr');
-            var tableData = document.createElement('td');
-            var link = document.createElement('a');
+        .then(function(data) {
+            var latitude = data[0].lat;
+            var longitude = data[0].lon;
+            var requestUrl = `https://api.openweathermap.org/data/2.5/forecast?lat=${latitude}&lon=${longitude}&appid=${APIKey}`;
 
-            link.textContent = data[i].html_url;
-            link.href = data[i].html_url;
+            fetch(requestUrl)
+                .then(function(response) {
+                    if (!response.ok) {
+                        throw new Error("Network response was not ok");
+                    }
+                    return response.json();
+                })
+                .then(function(data) {
+                    console.log(data);
+                    tableBody.innerHTML = ""; // Clear existing table data
+                    var currentWeather = data.list[0]; // Get the current day's weather
+                    var currentTemperature = Math.round((currentWeather.main.temp - 273.15) * 9/5 + 32); // Convert temperature from Kelvin to Fahrenheit
+                    var currentDescription = currentWeather.weather[0].description;
+                    currentWeatherDisplay.textContent = `Current Weather in ${cityName}: ${currentTemperature}°F, ${currentDescription}`;
 
-            tableData.appendChild(link);
-            createTableRow.appendChild(tableData);
-            tableBody.appendChild(createTableRow);
-        }
-    });
+                    for (var i = 0; i < data.list.length; i += 8) {
+                        // Fetch data for every 24 hours or 8 data points per day
+                        var createTableRow = document.createElement('tr');
+                        var dateData = document.createElement('td');
+                        var temperatureData = document.createElement('td');
+                        var descriptionData = document.createElement('td');
+
+                        var date = dayjs(data.list[i].dt_txt).format('ddd MMM D, YYYY');
+                        var temperature = Math.round((data.list[i].main.temp - 273.15) * 9/5 + 32); // Convert temperature from Kelvin to Fahrenheit
+                        var description = data.list[i].weather[0].description;
+
+                        dateData.textContent = date;
+                        temperatureData.textContent = `${temperature}°F`;
+                        descriptionData.textContent = description;
+
+                        createTableRow.appendChild(dateData);
+                        createTableRow.appendChild(temperatureData);
+                        createTableRow.appendChild(descriptionData);
+                        tableBody.appendChild(createTableRow);
+                    }
+                })
+                .catch(function(error) {
+                    console.error("Error:", error);
+                    // Handle error and display appropriate message to the user
+                });
+        })
+        .catch(function(error) {
+            console.error("Error:", error);
+            // Handle error and display appropriate message to the user
+        });
 }
-fetchButton.addEventListener('click', getWeather);
 
+// Function to display search history
+function displaySearchHistory() {
+    searchHistory.innerHTML = '';
+    for (var i = 0; i < searchList.length; i++) {
+        var searchItem = document.createElement('li');
+        searchItem.textContent = capitalizeFirstLetter(searchList[i]);
+        searchHistory.appendChild(searchItem);
+    }
+}
+
+// Function to add search to history
+function addSearchToHistory(cityName) {
+    // Remove the city name if it already exists in the list
+    searchList = searchList.filter(function(item) {
+        return item !== cityName;
+    });
+    // Prepend the new city name to the list
+    searchList.unshift(cityName);
+    // Keep only the last 5 searches
+    if (searchList.length > 5) {
+        searchList.pop();
+    }
+    // Update the local storage
+    localStorage.setItem('LocalWeatherSearches', JSON.stringify(searchList));
+    // Display the updated search history
+    displaySearchHistory();
+}
+
+// Function to capitalize the first letter of a string
+function capitalizeFirstLetter(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+}
