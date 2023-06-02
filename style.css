@@ -1,6 +1,44 @@
 * {
     border: rgb(248, 245, 245) solid 1px;
+    font-family: 'Libre Franklin', sans-serif;
 }
 
+font-family: 'Libre Franklin', sans-serif;
+font-family: 'Montserrat', sans-serif;
+font-family: 'Quicksand', sans-serif;
+font-family: 'Roboto', sans-serif;
+font-family: 'Titillium Web', sans-serif;
 
+a {
+    display: flex;
+    /* flex-grow: initial; */
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    flex-direction: row;
+}
 
+/* Anchor elements with a background color of light blue */
+a {
+    background-color: rgb(167, 201, 117);
+    border-radius: 9px;
+  }
+  
+  /* Table rows and their children with light grey background and black text color */
+  tr, tr * {
+    color: black;
+  }
+  
+  /* Card titles with a rounded border radius of 4 pixels */
+  .card-title {
+    border-radius: 4px;
+  }
+  ul {
+    border-radius: 9px;
+    font-family: 'Libre Franklin', sans-serif;
+  }
+  
+  /* Highlight buttons with a green background on hover */
+  .btn:hover {
+    background-color: rgb(134, 255, 134);
+  }

@@ -16,6 +16,7 @@ var today = dayjs().format('ddd MMM D, YYYY');
 var previousSearches = localStorage.getItem('LocalWeatherSearches');
 var searchList = previousSearches ? JSON.parse(previousSearches) : [];
 
+
 // Display the last 5 searches
 displaySearchHistory();
 
@@ -23,13 +24,15 @@ displaySearchHistory();
 fetchButton.addEventListener('click', function(event) {
     event.preventDefault();
     var cityName = searchInput.value.trim();
+    cityName = capitalizeFirstLetter(cityName); //capitalizes the first letter of the city name even if user types in lowercase
+    console.log(cityName);
     if (cityName) {
         displayWeather(cityName);
         addSearchToHistory(cityName);
         searchInput.value = '';
     }
 });
-
+console.log(cityName)
 // Function to display weather data
 function displayWeather(cityName) {
     var APIKey = "4941bfdda32877230c1f6b853660b979";
@@ -98,7 +101,7 @@ function displayWeather(cityName) {
 function displaySearchHistory() {
     searchHistory.innerHTML = '';
     for (var i = 0; i < searchList.length; i++) {
-        var searchItem = document.createElement('li');
+        var searchItem = document.createElement('ul');
         searchItem.textContent = capitalizeFirstLetter(searchList[i]);
         searchHistory.appendChild(searchItem);
     }
