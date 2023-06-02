@@ -1,6 +1,10 @@
 * {
-    border: rgb(248, 245, 245) solid 1px;
+    /* border: rgb(248, 245, 245) solid 1px; */
     font-family: 'Libre Franklin', sans-serif;
+}
+
+:root{
+    --colorbackground: #e7ebf1;
 }
 
 /* font-family: 'Libre Franklin', sans-serif;
@@ -9,6 +13,9 @@ font-family: 'Quicksand', sans-serif;
 font-family: 'Roboto', sans-serif;
 font-family: 'Titillium Web', sans-serif; */
 
+body{
+    background-color: white;
+}
 a {
     display: flex;
     /* flex-grow: initial; */
@@ -18,27 +25,101 @@ a {
     flex-direction: row;
 }
 
+#searchBar{
+    background-color: white;
+    margin-left: 14%;
+    margin-right: 14%;
+}
+.card-body{
+    flex: 1 1 auto;
+    padding: var(--bs-card-spacer-y) var(--bs-card-spacer-x);
+    color: var(--bs-card-color);
+    border-radius: 125px;
+}
 /* Anchor elements with a background color of light blue */
-a {
-    background-color: rgb(167, 201, 117);
-    border-radius: 9px;
+#current-date-time {
+    padding: 5px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    margin-left: 45%;
+    margin-right: 40%;
+    text-align: center;
+  }
+
+#title {
+    padding: 44px;
+    margin: auto;
+    font-size: 40px;
+    text-align: center;
+    display: flex;
+    flex-direction: column;
+    flex-wrap: wrap;
+    align-content: center;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Monomaniac One', sans-serif;
+    margin: auto;
+  }
+
+  #heading{
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: row;
+    align-content: center;
   }
   
+  #current-date-time{
+    padding: 30px;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    justify-content: center;
+    margin-left: 35%;
+    margin-right: 40%;
+    text-align: center;
+  }
   /* Table rows and their children with light grey background and black text color */
   tr, tr * {
-    color: black;
+    color:#187ad4;
+    display: flex;
+    align-content: center;
+    flex-wrap: wrap;
+    text-align: center;
+    font-size: 15px;
+    padding: 6px;
+    border: solid 1px rgb(186 234 255);
+    flex-direction: row;
+    justify-content: center;
+    align-items: stretch;
   }
   
   /* Card titles with a rounded border radius of 4 pixels */
-  .card-title {
+  h3, h2 {
     border-radius: 4px;
+    background-color: rgb(186 234 255);
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
+    align-content: space-around;
+    justify-content: center;
+    align-items: flex-start;
+    font-family: 'Monomaniac One', sans-serif;
   }
+
   ul {
     border-radius: 9px;
-    font-family: 'Libre Franklin', sans-serif;
+    font-family: 'Monomaniac One', sans-serif;
+    text-align: center;
+    border-style: none;
   }
   
+  footer{
+    border-radius: 4px;
+    font-family: 'Monomaniac One', sans-serif;
+  }
   /* Highlight buttons with a green background on hover */
   .btn:hover {
-    background-color: rgb(134, 255, 134);
+    background-color: var(--colorbackground)
   }

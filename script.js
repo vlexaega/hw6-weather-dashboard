@@ -11,6 +11,18 @@ var searchHistory = document.getElementById('search-history');
 
 // Set date format
 var today = dayjs().format('ddd MMM D, YYYY');
+//function to display the time on the page every second
+function updateDateTime() {
+    var currentDateTime = dayjs().format('ddd MMM d, YY h:ma');
+    document.getElementById('current-date-time').textContent = currentDateTime;
+  }
+  
+  // Initial call to update the date and time
+  updateDateTime();
+  // Update the date and time every second
+  setInterval(updateDateTime, 1000);
+
+  
 
 // Retrieve the previous searches from local storage
 var previousSearches = localStorage.getItem('LocalWeatherSearches');
@@ -65,24 +77,52 @@ function displayWeather(cityName) {
                     var currentDescription = currentWeather.weather[0].description;
                     currentWeatherDisplay.textContent = `Current Weather in ${cityName}: ${currentTemperature}°F, ${currentDescription}`;
 
-                    for (var i = 0; i < data.list.length; i += 8) {
-                        // Fetch data for every 24 hours or 8 data points per day
-                        var createTableRow = document.createElement('tr');
+                    var dailyData = {}; // Object to store weather data grouped by day
+
+                    // Group weather data by day
+                    for (var i = 0; i < data.list.length; i++) {
+                        var date = dayjs(data.list[i].dt_txt).format('ddd MMM D, YYYY');
+                        if (!dailyData[date]) {
+                            dailyData[date] = [];
+                        }
+                        var temperature = Math.round((data.list[i].main.temp - 273.15) * 9/5 + 32); // Convert temperature from Kelvin to Fahrenheit
+                        var description = data.list[i].weather[0].description;
+                        dailyData[date].push({ temperature: temperature, description: description });
+                    }
+
+                    var dayCounter = 0;
+                    var createTableRow; // Variable to store the current table row element
+
+                    // Create table rows for each day
+                    for (var date in dailyData) {
+                        if (dayCounter % 5 === 0) {
+                            createTableRow = document.createElement('tr');
+                        }
+
                         var dateData = document.createElement('td');
                         var temperatureData = document.createElement('td');
                         var descriptionData = document.createElement('td');
 
-                        var date = dayjs(data.list[i].dt_txt).format('ddd MMM D, YYYY');
-                        var temperature = Math.round((data.list[i].main.temp - 273.15) * 9/5 + 32); // Convert temperature from Kelvin to Fahrenheit
-                        var description = data.list[i].weather[0].description;
-
                         dateData.textContent = date;
-                        temperatureData.textContent = `${temperature}°F`;
-                        descriptionData.textContent = description;
+
+                        // Display the first weather data entry for each day
+                        var weatherData = dailyData[date][0];
+                        temperatureData.textContent = `${weatherData.temperature}°F`;
+                        descriptionData.textContent = weatherData.description;
 
                         createTableRow.appendChild(dateData);
                         createTableRow.appendChild(temperatureData);
                         createTableRow.appendChild(descriptionData);
+
+                        if (dayCounter % 5 === 4) {
+                            tableBody.appendChild(createTableRow);
+                        }
+
+                        dayCounter++;
+                    }
+
+                    // Check if there is an incomplete row and append it to the table body
+                    if (createTableRow) {
                         tableBody.appendChild(createTableRow);
                     }
                 })
